@@ -29,23 +29,27 @@
 #         exit
 #     fi
 # }
+set -e
 
 bc_ssl() {
-    echo "Bytes Crafter: Initiating Update ufw..."
+    echo "Bytes Crafter: Installing SSL..."
     echo ""
     sleep 1
         sudo apt install certbot python3-certbot-nginx -y
-    echo ""
+    echo "SLL Installed"
     sleep 1
 }
 
 bc_ufw() {
-    echo "Bytes Crafter: Installing SSL..."
-    echo ""
+    echo "Bytes Crafter: Running firewall"
     sleep 1
+        echo "Bytes Crafter: ufw allow 22/tcp..."
         sudo ufw allow 22/tcp
+        echo "Bytes Crafter: ufw allow 80/tcp"
         sudo ufw allow 80/tcp
+        echo "Bytes Crafter: ufw allow 443/tcp..."
         sudo ufw allow 443/tcp
+        echo "Bytes Crafter: ufw enable..."
         sudo ufw enable
     echo ""
     sleep 1
@@ -58,7 +62,7 @@ bc_update() {
     sleep 1
         sudo apt update
         sudo apt upgrade -y
-    echo ""
+    echo "UPDATE DONE!"
     sleep 1
 }
 
@@ -71,29 +75,31 @@ bc_install() {
     echo ""
     sleep 1
         sudo apt install nginx -y
-        sudo ufw allow 'Nginx HTTP'
         sudo systemctl enable nginx && sudo systemctl restart nginx
         sudo chown -R www-data:www-data /var/www/
         sudo chmod -R 777 /var/www/
-    echo ""
+        sleep 1
+
+    echo "NGINX installed"
     sleep 1
 
-    ########## INSTALL MARIADB ##########
+    ########## INSTALL MYSQL ##########
     echo "Bytes Crafter: Installing MARIADB..."
     echo ""
     sleep 1
-        sudo apt install mariadb-server -y
-        sudo systemctl enable mysql && sudo systemctl restart mysql
+        sudo apt update
+        sudo apt install mysql-server -y
+        sudo systemctl start mysql.service
     echo ""
     sleep 1
 
     echo "Bytes Crafter: CREATING DB and USER ..."
     echo ""
-        mysql -uroot -proot -e "CREATE DATABASE db_nestjs /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-        mysql -uroot -proot -e "CREATE USER asean092000@localhost IDENTIFIED BY 'asean092000';"
-        mysql -uroot -proot -e "GRANT ALL PRIVILEGES ON asean092000.* TO 'asean092000'@'localhost';"
-        mysql -uroot -proot -e "FLUSH PRIVILEGES;"
-    echo ""
+        sudo mysql -uroot -e "CREATE DATABASE db_nestjs CHARACTER SET utf8 COLLATE utf8_general_ci;"
+        sudo mysql -uroot -e "CREATE USER aseanboss@localhost IDENTIFIED WITH mysql_native_password BY  '8y9Z$%XblG%Dm2H6%ooR';"
+        sudo mysql -uroot -e "GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'aseanboss'@'localhost' WITH GRANT OPTION;"
+        sudo mysql -uroot -e "FLUSH PRIVILEGES;"
+    echo "MYSQL Installed"
     sleep 1
 
     ########## INSTALL Nodejs 18.12.0 ##########
@@ -101,14 +107,74 @@ bc_install() {
     echo "Bytes Crafter: Installing Nodejs 18.12.0..."
     echo ""
     sleep 1
-        sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh
-        sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-        sudo source ~/.bashrc
-        sudo nvm list-remote
-        sudo nvm install v18.12.0
-        sudo nvm use v18.12.0
-        npm install pm2 -g
-        npm install --global yarn
+        # Install node and npm via nvm - https://github.com/creationix/nvm
+
+        # Run this script like - bash script-name.sh
+
+        # Define versions
+        local INSTALL_NODE_VER=18.12.0
+        local INSTALL_NVM_VER=0.35.3
+        local INSTALL_YARN_VER=1.22.19
+
+        # You can pass argument to this script --version 8
+        if [ "$1" = '--version' ]; then
+            echo "==> Using specified node version - $2"
+            INSTALL_NODE_VER=$2
+        fi
+
+        echo "==> Ensuring .bashrc exists and is writable"
+        touch ~/.bashrc
+
+        echo "==> Installing node version manager (NVM). Version $INSTALL_NVM_VER"
+        # Removed if already installed
+        rm -rf ~/.nvm
+        # Unset exported variable
+        export NVM_DIR=
+
+        # Install nvm 
+        curl -o- https://raw.githubusercontent.com/creationix/nvm/v$INSTALL_NVM_VER/install.sh | bash
+        # Make nvm command available to terminal
+        source ~/.nvm/nvm.sh
+
+        echo "==> Installing node js version $INSTALL_NODE_VER"
+        nvm install $INSTALL_NODE_VER
+
+        echo "==> Make this version system default"
+        nvm alias default $INSTALL_NODE_VER
+        nvm use default
+
+        #echo -e "==> Update npm to latest version, if this stuck then terminate (CTRL+C) the execution"
+        #npm install -g npm
+
+        echo "==> Installing Yarn package manager"
+        rm -rf ~/.yarn
+        curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $INSTALL_YARN_VER
+
+        echo "==> Adding Yarn to environment path"
+        # Yarn configurations
+        export PATH="$HOME/.yarn/bin:$PATH"
+        yarn config set prefix ~/.yarn -g
+
+        echo "==> Checking for versions"
+        nvm --version
+        node --version
+        npm --version
+        yarn --version
+
+        echo "==> Print binary paths"
+        which npm
+        which node
+        which yarn
+
+        echo "==> List installed node versions"
+        nvm ls
+
+        nvm cache clear
+        echo "==> Now you're all setup and ready for development. If changes are yet totake effect, I suggest you restart your computer"
+
+        echo "NODE 18.12.0 installed"
+
+# Tested on Ubuntu, MacOS
     echo ""
     sleep 1
 
@@ -125,12 +191,28 @@ bc_install() {
 
 }
 
+bc_checkEnv(){
+     sleep 1
+     echo "Bytes Crafter: Node version"
+        node -v
+     sleep 1
+     echo "Bytes Crafter: mysql version"
+        mysql -v
+     sleep 1
+    echo "Bytes Crafter: nginx version"
+        nginx -v
+     sleep 1
+    echo "Bytes Crafter: yarn version"
+        yarn --version
+     sleep 1
+}
 # initialized the whole installation.
 bc_init() {
     bc_update
-    bc_install
     bc_ufw
+    bc_install
     bc_ssl
+    bc_checkEnv
 }
 bc_init
 exit
