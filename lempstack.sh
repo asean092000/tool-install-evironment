@@ -132,10 +132,5 @@ bc_init() {
     bc_ufw
     bc_ssl
 }
-
-# primary function check.
-# bc_main() {
-#     bc_checkroot
-# }
-# bc_main
-# exit
+bc_init
+exit
