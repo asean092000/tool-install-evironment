@@ -19,16 +19,16 @@
 # 5. bc_main: the main function, add your functions to this place
 
 # Function check user root
-bc_checkroot() {
-    if (($EUID == 0)); then
-        # If user is root, continue to function bc_init
-        bc_init
-    else
-        # If user not is root, print message and exit script
-        echo "Bytes Crafter: Please run this script by user root ."
-        exit
-    fi
-}
+# bc_checkroot() {
+#     if (($EUID == 0)); then
+#         # If user is root, continue to function bc_init
+#         bc_init
+#     else
+#         # If user not is root, print message and exit script
+#         echo "Bytes Crafter: Please run this script by user root ."
+#         exit
+#     fi
+# }
 
 bc_ssl() {
     echo "Bytes Crafter: Initiating Update ufw..."
@@ -134,8 +134,8 @@ bc_init() {
 }
 
 # primary function check.
-bc_main() {
-    bc_checkroot
-}
-bc_main
-exit
+# bc_main() {
+#     bc_checkroot
+# }
+# bc_main
+# exit
