@@ -45,6 +45,8 @@ bc_ssl() {
         bc_create_folder
         bc_create_sub
         done
+    sudo systemctl status certbot.timer
+    sudo certbot renew --dry-run
     echo "SLL Installed"
     sleep 1
 }
@@ -147,46 +149,8 @@ bc_update() {
     sleep 1
 }
 
-# Function install LEMP stack
-bc_install() {
-
-    ########## INSTALL NGINX ##########
-    echo ""
-    echo "Bytes Crafter: Installing NGINX..."
-    echo ""
-    sleep 1
-        sudo apt install nginx -y
-        sudo ufw allow 'Nginx Full'
-        sudo ufw delete allow 'Nginx HTTP'
-        sudo ufw status
-        sudo systemctl enable nginx && sudo systemctl restart nginx
-        sudo chown -R www-data:www-data /var/www/
-        sudo chmod -R 777 /var/www/
-        sleep 1
-
-    echo "NGINX installed"
-    sleep 1
-
-    ########## INSTALL MYSQL ##########
-    echo "Bytes Crafter: Installing MARIADB..."
-    echo ""
-    sleep 1
-        sudo apt update
-        sudo apt install mysql-server -y
-        sudo systemctl start mysql.service
-    echo ""
-    sleep 1
-
-    echo "Bytes Crafter: CREATING DB and USER ..."
-    echo ""
-        sudo mysql -uroot -e "CREATE DATABASE db_nestjs CHARACTER SET utf8 COLLATE utf8_general_ci;"
-        sudo mysql -uroot -e "CREATE USER aseanboss@localhost IDENTIFIED WITH mysql_native_password BY  '8y9Z$%XblG%Dm2H6%ooR';"
-        sudo mysql -uroot -e "GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'aseanboss'@'localhost' WITH GRANT OPTION;"
-        sudo mysql -uroot -e "FLUSH PRIVILEGES;"
-    echo "MYSQL Installed"
-    sleep 1
-
-    ########## INSTALL Nodejs 18.12.0 ##########
+########## INSTALL Nodejs 18.12.0 ##########
+bc_nodejs() {
     # This is unofficial repository, it's up to you if you want to use it.
     echo "Bytes Crafter: Installing Nodejs 18.12.0..."
     echo ""
@@ -261,8 +225,50 @@ bc_install() {
 # Tested on Ubuntu, MacOS
     echo ""
     sleep 1
+}
 
-    ########## ENDING MESSAGE ##########
+########## INSTALL MYSQL ##########
+bc_mysql() {
+    echo "Bytes Crafter: Installing MYSQL..."
+    echo ""
+    sleep 1
+        sudo apt update
+        sudo apt install mysql-server -y
+        sudo systemctl start mysql.service
+    echo ""
+    sleep 1
+
+    echo "Bytes Crafter: CREATING DB and USER ..."
+    echo ""
+        sudo mysql -uroot -e "CREATE DATABASE db_nestjs CHARACTER SET utf8 COLLATE utf8_general_ci;"
+        sudo mysql -uroot -e "CREATE USER aseanboss@localhost IDENTIFIED WITH mysql_native_password BY  '8y9Z$%XblG%Dm2H6%ooR';"
+        sudo mysql -uroot -e "GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'aseanboss'@'localhost' WITH GRANT OPTION;"
+        sudo mysql -uroot -e "FLUSH PRIVILEGES;"
+    echo "MYSQL Installed"
+    sleep 1
+}
+
+########## INSTALL NGINX ##########
+bc_nginx () {
+    echo ""
+    echo "Bytes Crafter: Installing NGINX..."
+    echo ""
+    sleep 1
+        sudo apt install nginx -y
+        sudo ufw allow 'Nginx Full'
+        sudo ufw delete allow 'Nginx HTTP'
+        sudo ufw status
+        sudo systemctl enable nginx && sudo systemctl restart nginx
+        sudo chown -R www-data:www-data /var/www/
+        sudo chmod -R 777 /var/www/
+        sleep 1
+
+    echo "NGINX installed"
+    sleep 1
+}
+
+########## ENDING MESSAGE ##########
+bc_message(){
     sleep 1
     echo ""
         local start="Bytes Crafter: You can access http://"
@@ -272,9 +278,9 @@ bc_install() {
         echo "Bytes Crafter: Thank you for using our script, Bytes Crafter! ..."
     echo ""
     sleep 1
-
 }
 
+########## CHECK ENVIRONMENTS ##########
 bc_checkEnv(){
      sleep 1
      echo "Bytes Crafter: Node version"
@@ -290,12 +296,20 @@ bc_checkEnv(){
         yarn --version
      sleep 1
 }
+
+# Function install LEMP stack
+bc_install() {
+    bc_nodejs
+    bc_nginx
+    bc_mysql
+    bc_ssl
+}
+
 # initialized the whole installation.
 bc_init() {
     bc_update
     bc_ufw
     bc_install
-    bc_ssl
     bc_checkEnv
 }
 bc_init
