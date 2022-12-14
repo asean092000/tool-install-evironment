@@ -339,7 +339,7 @@ bc_ask_port() {
         bc_install_port
     elif [ $END == 'no' ]
     then
-        exit
+        sudo reboot
     else
        echo "must be correct..."
        bc_ask_port
@@ -351,7 +351,6 @@ bc_install() {
     bc_nginx
     bc_mysql
     bc_ssl
-    bc_ask_port
 }
 
 # initialized the whole installation.
@@ -360,6 +359,7 @@ bc_init() {
     bc_ufw
     bc_install
     bc_checkEnv
+    bc_ask_port
 }
 bc_init
 exit
