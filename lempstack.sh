@@ -294,9 +294,9 @@ bc_checkEnv(){
 }
 # initialized the whole installation.
 bc_init() {
-    # bc_update
-    # bc_ufw
-    # bc_install
+    bc_update
+    bc_ufw
+    bc_install
     bc_ssl
     bc_checkEnv
 }
