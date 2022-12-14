@@ -35,9 +35,90 @@ bc_ssl() {
     echo "Bytes Crafter: Installing SSL..."
     echo ""
     sleep 1
-        sudo apt install certbot python3-certbot-nginx -y
+        sudo apt install certbot python3-certbot-nginx -y;
+        sudo systemctl stop nginx;
+        read -p "enter number of site" END
+        START=1
+        $END=$END-1
+        for i in $(seq $START $END)
+        do
+        echo "Creating subdomain: $i";
+        bc_create_folder
+        bc_create_sub
+        done
+        sudo nginx -t;
+        sudo systemctl restart nginx;
+        sudo systemctl status certbot.timer;
+        sudo certbot renew --dry-run;
     echo "SLL Installed"
     sleep 1
+}
+
+bc_create_folder() {
+    echo "Subdomain example.com";
+    path="/var/www/";
+    index="/index.html";
+    while true; do
+    read -p "enter directory "  DIR
+
+    if [ -d "$DIR" ]; then
+        echo "directory $DIR already exist"
+        sleep 1
+    else
+        sudo mkdir -p $path$DIR
+        sudo touch $path$DIR$index
+        sudo chmod 777 $path$DIR$index
+        sudo cat > $path$DIR$index << EOF
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>New Page</title>
+            </head>
+            <body>
+                <h1>Hello, World! $DIR</h1>
+            </body>
+            </html>
+EOF
+        echo "creating $DIR"
+        break
+    fi
+done
+}
+
+bc_create_sub() {
+    echo "Subdomain example.com";
+    path="/etc/nginx/sites-available/";
+    index="/index.html"
+    enabled="/etc/nginx/sites-enabled/";
+    while true; do
+    read -p "enter directory "  DIR
+
+    if [ -d "$DIR" ]; then
+        echo "directory $DIR already exist"
+        sleep 1
+    else
+        sudo touch $path$DIR
+        sudo chmod 777 $path$DIR
+        sudo cat > $path$DIR << EOF
+        server {
+
+            listen 80;
+
+            listen [::]:80;
+
+            root /var/www/$DIR;
+
+            index index.html;
+
+            server_name $DIR;
+        }
+EOF
+        sudo ln -s $path$DIR $enabled$DIR
+        echo "creating $DIR"
+        sudo certbot certonly -d $DIR
+        break
+    fi
+done
 }
 
 bc_ufw() {
@@ -197,7 +278,7 @@ bc_checkEnv(){
         node -v
      sleep 1
      echo "Bytes Crafter: mysql version"
-        mysql -v
+        mysql --version
      sleep 1
     echo "Bytes Crafter: nginx version"
         nginx -v
