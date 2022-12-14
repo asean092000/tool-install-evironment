@@ -17,29 +17,29 @@
 # 3. bc_install: funtion to install LEMP stack
 # 4. bc_init: function use to call the main part of installation
 # 5. bc_main: the main function, add your functions to this place
-
-# Function check user root
-# bc_checkroot() {
-#     if (($EUID == 0)); then
-#         # If user is root, continue to function bc_init
-#         bc_init
-#     else
-#         # If user not is root, print message and exit script
-#         echo "Bytes Crafter: Please run this script by user root ."
-#         exit
-#     fi
-# }
 set -e
 
+# Function check user root
+bc_checkroot() {
+    if (($EUID == 0)); then
+        # If user is root, continue to function bc_init
+        bc_init
+    else
+        # If user not is root, print message and exit script
+        echo "Bytes Crafter: Please run this script by user root ."
+        exit
+    fi
+}
+
+# Function install ssl
 bc_ssl() {
     echo "Bytes Crafter: Installing SSL..."
     echo ""
     sleep 1
         sudo apt install certbot python3-certbot-nginx -y;
         sudo systemctl stop nginx;
-        read -p "enter number of site" END
+        read -p "enter number of site: " END
         START=1
-        $END=$END-1
         for i in $(seq $START $END)
         do
         echo "Creating subdomain: $i";
@@ -54,8 +54,9 @@ bc_ssl() {
     sleep 1
 }
 
+# Function create folder to contain source code
 bc_create_folder() {
-    echo "Subdomain example.com";
+    echo "Creating folder for example.com";
     path="/var/www/";
     index="/index.html";
     while true; do
@@ -85,16 +86,17 @@ EOF
 done
 }
 
+# Function create subdomain
 bc_create_sub() {
-    echo "Subdomain example.com";
+    echo "Creating ssl for example.com";
     path="/etc/nginx/sites-available/";
     index="/index.html"
     enabled="/etc/nginx/sites-enabled/";
     while true; do
-    read -p "enter directory "  DIR
+    read -p "enter subdomain: "  DIR
 
     if [ -d "$DIR" ]; then
-        echo "directory $DIR already exist"
+        echo "subdomain $DIR already exist"
         sleep 1
     else
         sudo touch $path$DIR
@@ -114,13 +116,14 @@ bc_create_sub() {
         }
 EOF
         sudo ln -s $path$DIR $enabled$DIR
-        echo "creating $DIR"
-        sudo certbot certonly -d $DIR
+        echo "Creating $DIR..."
+        sudo certbot --nginx -d $DIR
         break
     fi
 done
 }
 
+# Function enable firewall
 bc_ufw() {
     echo "Bytes Crafter: Running firewall"
     sleep 1
@@ -156,6 +159,8 @@ bc_install() {
     echo ""
     sleep 1
         sudo apt install nginx -y
+        sudo ufw allow 'Nginx Full'
+        sudo ufw delete allow 'Nginx HTTP'
         sudo systemctl enable nginx && sudo systemctl restart nginx
         sudo chown -R www-data:www-data /var/www/
         sudo chmod -R 777 /var/www/
@@ -289,9 +294,9 @@ bc_checkEnv(){
 }
 # initialized the whole installation.
 bc_init() {
-    bc_update
-    bc_ufw
-    bc_install
+    # bc_update
+    # bc_ufw
+    # bc_install
     bc_ssl
     bc_checkEnv
 }
