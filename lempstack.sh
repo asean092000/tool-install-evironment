@@ -327,8 +327,23 @@ EOF
     sudo ln -s $path$DIR $enabled$DIR
     sudo nginx -t
     sudo systemctl reload nginx
-    exit
+    bc_reboot
 done
+}
+
+bc_reboot() {
+    echo "yes/no"
+    read -p "System needs to reboot : " END
+    if [ $END == 'yes' ]
+    then
+        sudo reboot
+    elif [ $END == 'no' ]
+    then
+        exit
+    else
+       echo "Must be correct...";
+       bc_reboot
+    fi
 }
 
 bc_ask_port() {
@@ -339,9 +354,9 @@ bc_ask_port() {
         bc_install_port
     elif [ $END == 'no' ]
     then
-        sudo reboot
+        bc_reboot
     else
-       echo "must be correct..."
+       echo "Must be correct..."
        bc_ask_port
     fi
 }
