@@ -1,22 +1,4 @@
 #!/bin/bash
-# Script author: Bytes Crafter
-# Script site: https://www.bytescrafter.net
-# Script date: 19-04-2020
-# Script ver: 1.0
-# Script use to install LEMP stack on Debian 10
-#--------------------------------------------------
-# Software version:
-# 1. OS: 10.3 (Ubuntu) 64 bit
-# 2. Nginx: 1.14.2
-# 3. MariaDB: 10.3
-# 4. Nodejs 18: 18.12.0
-#--------------------------------------------------
-# List function:
-# 1. bc_checkroot: check to make sure script can be run by user root
-# 2. bc_update: update all the packages
-# 3. bc_install: funtion to install LEMP stack
-# 4. bc_init: function use to call the main part of installation
-# 5. bc_main: the main function, add your functions to this place
 set -e
 
 # Function check user root
