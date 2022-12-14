@@ -37,7 +37,6 @@ bc_ssl() {
     echo ""
     sleep 1
         sudo apt install certbot python3-certbot-nginx -y;
-        sudo systemctl stop nginx;
         read -p "enter number of site: " END
         START=1
         for i in $(seq $START $END)
@@ -46,10 +45,6 @@ bc_ssl() {
         bc_create_folder
         bc_create_sub
         done
-        sudo nginx -t;
-        sudo systemctl restart nginx;
-        sudo systemctl status certbot.timer;
-        sudo certbot renew --dry-run;
     echo "SLL Installed"
     sleep 1
 }
@@ -116,6 +111,8 @@ bc_create_sub() {
         }
 EOF
         sudo ln -s $path$DIR $enabled$DIR
+        sudo nginx -t
+        sudo systemctl reload nginx
         echo "Creating $DIR..."
         sudo certbot --nginx -d $DIR
         break
@@ -161,6 +158,7 @@ bc_install() {
         sudo apt install nginx -y
         sudo ufw allow 'Nginx Full'
         sudo ufw delete allow 'Nginx HTTP'
+        sudo ufw status
         sudo systemctl enable nginx && sudo systemctl restart nginx
         sudo chown -R www-data:www-data /var/www/
         sudo chmod -R 777 /var/www/
