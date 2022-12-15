@@ -19,18 +19,23 @@ bc_ssl() {
     echo ""
     sleep 1
         sudo apt install certbot python3-certbot-nginx -y;
-        read -p "enter number of site: " END
-        START=1
-        for i in $(seq $START $END)
-        do
+        bc_sub
+        sudo systemctl status certbot.timer
+        sudo certbot renew --dry-run
+    echo "SLL Installed"
+    sleep 1
+}
+
+# Function create sub domain
+bc_sub() {
+    read -p "enter number of site: " END
+    START=1
+    for i in $(seq $START $END)
+    do
         echo "Creating subdomain: $i";
         bc_create_folder
         bc_create_sub
-        done
-    sudo systemctl status certbot.timer
-    sudo certbot renew --dry-run
-    echo "SLL Installed"
-    sleep 1
+    done
 }
 
 # Function create folder to contain source code
@@ -370,7 +375,7 @@ bc_install() {
 
 # initialized the whole installation.
 bc_init() {
-    echo -e "Choose 1: Install environment\n2: Install port\n3: Install ssl for new site\n4: exit"
+    echo -e "Choose a number \n1: Install environment\n2: Install port\n3: Install ssl for new site\n4: exit"
     read -p "Enter number: " END
     if [ $END == 1 ]
     then
@@ -384,7 +389,7 @@ bc_init() {
         bc_ask_port
     elif [ $END == 3 ]
     then
-       bc_ssl
+       bc_sub
     elif [ $END == 4 ]
     then
        exit
