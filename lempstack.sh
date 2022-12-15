@@ -370,7 +370,8 @@ bc_install() {
 
 # initialized the whole installation.
 bc_init() {
-    read -p "Choose 1: Install environment 2: Install port 3: exit" END
+    echo -e "Choose 1: Install environment\n2: Install port\n3: Install ssl for new site\n4: exit"
+    read -p "Enter number: " END
     if [ $END == 1 ]
     then
         bc_update
@@ -381,6 +382,9 @@ bc_init() {
         bc_checkEnv
         bc_ask_port
     elif [ $END == 3 ]
+    then
+       bc_ssl
+    elif [ $END == 4 ]
     then
        exit
     else
