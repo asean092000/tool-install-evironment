@@ -377,6 +377,7 @@ bc_init() {
         bc_update
         bc_ufw
         bc_install
+        bc_reboot
     elif [ $END == 2 ]
     then
         bc_checkEnv
