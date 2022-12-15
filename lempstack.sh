@@ -290,10 +290,14 @@ bc_install_port() {
     index="/index.html"
     enabled="/etc/nginx/sites-enabled/";
     while true; do
-    read -p "enter subdomain: "  DIR
-    read -p "enter port's running: "  PORT
-    check=$enabled$DIR
-    sudo rm $check
+        read -p "enter subdomain: "  DIR
+        read -p "enter port's running: "  PORT
+    if [ -f "$enabled$DIR" ] || [ -f "$path$DIR" ];
+    then
+        sudo rm $enabled$DIR
+        sudo rm $path$DIR
+        echo "The $enabled$DIR and $path$DIR are removed...";
+    fi
     echo "Starting update port...";
     sleep 2
     sudo touch $path$DIR
