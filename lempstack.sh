@@ -370,11 +370,22 @@ bc_install() {
 
 # initialized the whole installation.
 bc_init() {
-    bc_update
-    bc_ufw
-    bc_install
-    bc_checkEnv
-    bc_ask_port
+    read -p "Choose 1: Install environment 2: Install port 3: exit" END
+    if [ $END == 1 ]
+    then
+        bc_update
+        bc_ufw
+        bc_install
+    elif [ $END == 2 ]
+    then
+        bc_checkEnv
+        bc_ask_port
+    elif [ $END == 3 ]
+    then
+       exit
+    else
+       echo "Must be correct..."
+    fi
+    bc_init
 }
 bc_init
-exit
