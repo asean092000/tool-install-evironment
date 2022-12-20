@@ -191,7 +191,7 @@ bc_nodejs() {
         yarn config set prefix ~/.yarn -g
 
         echo "==> Installing PM2 package manager"
-        yarn add pm2
+        yarn global add pm2
 
         echo "==> Checking for versions"
         nvm --version
