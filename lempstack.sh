@@ -190,11 +190,15 @@ bc_nodejs() {
         export PATH="$HOME/.yarn/bin:$PATH"
         yarn config set prefix ~/.yarn -g
 
+        echo "==> Installing PM2 package manager"
+        yarn add pm2
+
         echo "==> Checking for versions"
         nvm --version
         node --version
         npm --version
         yarn --version
+        pm2 --version
 
         echo "==> Print binary paths"
         which npm
