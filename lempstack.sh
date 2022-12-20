@@ -198,7 +198,6 @@ bc_nodejs() {
         node --version
         npm --version
         yarn --version
-        pm2 --version
 
         echo "==> Print binary paths"
         which npm
@@ -211,7 +210,7 @@ bc_nodejs() {
         nvm cache clear
         echo "==> Now you're all setup and ready for development. If changes are yet totake effect, I suggest you restart your computer"
 
-        echo "NODE 18.12.0 installed"
+        echo "NODE $INSTALL_NODE_VER installed"
 
 # Tested on Ubuntu, MacOS
     echo ""
