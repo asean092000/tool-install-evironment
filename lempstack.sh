@@ -192,6 +192,7 @@ bc_nodejs() {
 
         echo "==> Installing PM2 package manager"
         yarn global add pm2
+        pm2 completion install
 
         echo "==> Checking for versions"
         nvm --version
