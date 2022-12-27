@@ -346,6 +346,12 @@ done
 
 bc_action() {
     read -p "enter Domain: "  DOMAIN
+    if [ -d "$DIR" ]; then
+        echo "Check path ok";
+    else
+        sudo mkdir /var/www/$DOMAIN
+        sudo chmod -R 777 /var/www/$DOMAIN
+    fi
     cd /var/www/$DOMAIN && sudo mkdir actions-runner && cd actions-runner
     SOURCE=${BASH_SOURCE[0]}
     while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -354,6 +360,7 @@ bc_action() {
         [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
     done
     DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+    echo $DIR
     sudo chmod -R 777 $DIR
     read -p "enter URL and token: "  URL
     curl -o actions-runner-osx-x64-2.300.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.300.0/actions-runner-osx-x64-2.300.0.tar.gz
@@ -361,7 +368,7 @@ bc_action() {
     sudo tar xzf ./actions-runner-osx-x64-2.300.0.tar.gz
     ./config.sh $URL
     sudo ./svc.sh install && sudo ./svc.sh start && sudo ./svc.sh status
-    cd ../../../../
+    # cd ../../../../
 }
 
 bc_install_app() {
