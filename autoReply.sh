@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+spawn ./lempstack.sh
+expect "New password:"
+send "kBJhMTpqnPUkxFRYaH"
+expect "Retype new password:"
+send "kBJhMTpqnPUkxFRYaH"
+expect "Full Name []:"
+send "ckStaBelMD"
+expect "Room Number []:"
+send "IT"
+expect "Work Phone []:"
+send "0983455604"
+expect "Home Phone []:"
+send "0983455604"
+expect "Other []:"
+send "No"
+expect "Is the information correct? [Y/n]"
+send "Y"
+expect "Password:"
+send "kBJhMTpqnPUkxFRYaH"
