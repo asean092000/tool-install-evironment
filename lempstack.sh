@@ -358,8 +358,8 @@ bc_action() {
     sudo chmod -R 777 $DIR
     read -p "Download the latest runner package: "  package
     read -p "Optional: Validate the hash: "  Optional
-    read -p "Create the runner and start the configuration experience: "  configuration
     read -p "Extract the installer: "  Extract
+    read -p "Create the runner and start the configuration experience: "  configuration
     curl -o  $package
     echo $Optional
     sudo tar xzf $Extract
